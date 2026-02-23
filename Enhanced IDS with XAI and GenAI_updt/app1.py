@@ -34,7 +34,7 @@ You are a cybersecurity AI assistant. A deep learning intrusion detection model 
 Here are the top influential features and their impact:
 {features_text}
 
-1. Explain what these input features represent in network traffic.
+1. Explain what is these input features represent in network traffic.
 2. Why might these features be contributing to detecting this type of attack?
 3. Write this explanation simply and clearly for a student or analyst to understand.
 """
