@@ -1024,9 +1024,10 @@ def model_performance_page():
     </div>
     """, unsafe_allow_html=True)
     
-    # Use Altair for better visualization
-    import altair as alt
-    
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
     # Create a selection for the metric
     metric_selection = st.selectbox(
         "Select Metric for GAN Comparison", 
@@ -1042,19 +1043,32 @@ def model_performance_page():
     </div>
     """, unsafe_allow_html=True)
     
-    # Create the chart
-    chart = alt.Chart(gan_df).mark_bar().encode(
-        x=alt.X('Model:N', sort=models_gan),
-        y=alt.Y(f'{metric_selection}:Q', scale=alt.Scale(domain=[0, 1])),
-        color=alt.Color('Category:N', scale=alt.Scale(domain=['Before GAN', 'After GAN'], 
-                                                       range=['#5B9BD5', '#ED7D31'])),
-        tooltip=['Model', metric_selection]
-    ).properties(
-        width=600,
-        height=400
-    )
-    
-    st.altair_chart(chart, use_container_width=True)
+    # Create matplotlib bar chart for GAN comparison
+    fig1, ax1 = plt.subplots(figsize=(10, 5))
+    fig1.patch.set_facecolor('#000A1E')
+    ax1.set_facecolor('#000A1E')
+    colors_gan = ['#5B9BD5' if c == 'Before GAN' else '#ED7D31' for c in gan_df['Category']]
+    bars = ax1.bar(gan_df['Model'], gan_df[metric_selection], color=colors_gan, edgecolor='#00ffff', linewidth=0.5)
+    ax1.set_ylim(0, 1)
+    ax1.set_ylabel(metric_selection, color='white')
+    ax1.set_title(f'{metric_selection} - Before vs After GAN Enhancement', color='#00ffff', fontsize=13)
+    ax1.tick_params(colors='white')
+    ax1.spines[:].set_color('#00ffff')
+    for label in ax1.get_xticklabels():
+        label.set_color('white')
+        label.set_fontsize(9)
+    # Add value labels on bars
+    for bar in bars:
+        height = bar.get_height()
+        ax1.annotate(f'{height:.4f}', xy=(bar.get_x() + bar.get_width()/2, height),
+                     xytext=(0, 4), textcoords='offset points', ha='center', color='white', fontsize=9)
+    # Legend
+    from matplotlib.patches import Patch
+    legend_elements = [Patch(facecolor='#5B9BD5', label='Before GAN'), Patch(facecolor='#ED7D31', label='After GAN')]
+    ax1.legend(handles=legend_elements, facecolor='#000A1E', labelcolor='white')
+    plt.tight_layout()
+    st.pyplot(fig1)
+    plt.close(fig1)
     
     # SECTION 2: Comparison with Other Models
     st.markdown("""
@@ -1115,19 +1129,31 @@ def model_performance_page():
     </div>
     """, unsafe_allow_html=True)
     
-    # Create the chart - sort by performance to highlight the proposed model's superiority
-    chart2 = alt.Chart(compare_df).mark_bar().encode(
-        x=alt.X('Model:N', sort='-y'),
-        y=alt.Y(f'{metric_selection2}:Q', scale=alt.Scale(domain=[0, 1])),
-        color=alt.Color('Is Proposed:N', scale=alt.Scale(domain=['Proposed', 'Other'], 
-                                                          range=['#FF6B6B', '#4ECDC4'])),
-        tooltip=['Model', metric_selection2]
-    ).properties(
-        width=600,
-        height=400
-    )
-    
-    st.altair_chart(chart2, use_container_width=True)
+    # Create matplotlib bar chart for model comparison (sorted by metric)
+    compare_sorted = compare_df.sort_values(by=metric_selection2, ascending=False)
+    colors_compare = ['#FF6B6B' if p == 'Proposed' else '#4ECDC4' for p in compare_sorted['Is Proposed']]
+    fig2, ax2 = plt.subplots(figsize=(12, 5))
+    fig2.patch.set_facecolor('#000A1E')
+    ax2.set_facecolor('#000A1E')
+    bars2 = ax2.bar(compare_sorted['Model'], compare_sorted[metric_selection2], color=colors_compare, edgecolor='#00ffff', linewidth=0.5)
+    ax2.set_ylim(0, 1)
+    ax2.set_ylabel(metric_selection2, color='white')
+    ax2.set_title(f'{metric_selection2} - Model Comparison', color='#00ffff', fontsize=13)
+    ax2.tick_params(colors='white')
+    ax2.spines[:].set_color('#00ffff')
+    for label in ax2.get_xticklabels():
+        label.set_color('white')
+        label.set_fontsize(8)
+        label.set_rotation(15)
+    for bar in bars2:
+        height = bar.get_height()
+        ax2.annotate(f'{height:.4f}', xy=(bar.get_x() + bar.get_width()/2, height),
+                     xytext=(0, 4), textcoords='offset points', ha='center', color='white', fontsize=8)
+    legend_elements2 = [Patch(facecolor='#FF6B6B', label='Proposed'), Patch(facecolor='#4ECDC4', label='Other')]
+    ax2.legend(handles=legend_elements2, facecolor='#000A1E', labelcolor='white')
+    plt.tight_layout()
+    st.pyplot(fig2)
+    plt.close(fig2)
     
     # Detailed table view
     st.markdown("""
