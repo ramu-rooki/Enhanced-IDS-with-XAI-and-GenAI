@@ -171,8 +171,9 @@ def load_models():
     models_loaded = False
     try:
         # First try loading with TensorFlow 2.x format (.keras extension)
-        cnn_model = load_model("cnn_model.keras")
-        lstm_model = load_model("lstm_model.keras")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        cnn_model = load_model(os.path.join(base_dir, "cnn_model.keras"))
+        lstm_model = load_model(os.path.join(base_dir, "lstm_model.keras"))
         models_loaded = True
     except Exception as e2:
         st.error(f"Error loading models: {str(e2)}. Please ensure model files exist in the correct format.")
@@ -180,7 +181,8 @@ def load_models():
         lstm_model = None
     
     try:
-        scaler = joblib.load("scaler.pkl")  # Scaler used for feature normalization
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        scaler = joblib.load(os.path.join(base_dir, "scaler.pkl"))  # Scaler used for feature normalization
     except Exception as e:
         st.error(f"Error loading scaler: {str(e)}. Please ensure scaler.pkl exists.")
         scaler = StandardScaler()
@@ -426,7 +428,7 @@ def sign_in_page():
     
     # Add cyber security themed image
     st.image("https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3", 
-             use_column_width=True, caption="Secure Authentication Portal")
+             use_container_width=True, caption="Secure Authentication Portal")
     
     with st.container():
         col1, col2, col3 = st.columns([1,2,1])
@@ -452,7 +454,7 @@ def register_page():
     
     # Add cyber security themed image
     st.image("https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3", 
-             use_column_width=True, caption="Create Your Secure Account")
+             use_container_width=True, caption="Create Your Secure Account")
     
     with st.container():
         col1, col2, col3 = st.columns([1,2,1])
@@ -485,7 +487,7 @@ def prediction_page():
     
     # Add a header with cyber security image
     st.image("https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3", 
-             use_column_width=True, caption="Real-time Network Traffic Monitoring")
+             use_container_width=True, caption="Real-time Network Traffic Monitoring")
     
     # Display model loading status
     if not is_models_loaded():
@@ -687,7 +689,7 @@ def prediction_page():
         
         # Add a real-time monitoring image
         st.image("https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3", 
-                 use_column_width=True, caption="Real-time Network Traffic Analysis")
+                 use_container_width=True, caption="Real-time Network Traffic Analysis")
         
         try:
             df = pd.read_csv("balanced_sampled.csv")
@@ -909,7 +911,7 @@ def project_info_page():
     
     # Add a hero image
     st.image("https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3", 
-             use_column_width=True, caption="Advanced Intrusion Detection System")
+             use_container_width=True, caption="Advanced Intrusion Detection System")
     
     st.markdown("""
     <div style="background-color:rgba(0, 10, 30, 0.7); padding:20px; border-radius:10px; border-left: 4px solid #00ffff;">
@@ -986,7 +988,7 @@ def model_performance_page():
     
     # Add a performance metrics image
     st.image("https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3", 
-             use_column_width=True, caption="Model Performance Metrics")
+             use_container_width=True, caption="Model Performance Metrics")
     
     # SECTION 1: Before vs After GAN Enhancement (LSTM and CNN)
     st.markdown("""
@@ -1154,7 +1156,7 @@ def dashboard_page():
     
     # Add a dashboard header image
     st.image("https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3", 
-             use_column_width=True, caption="Security Operations Center Dashboard")
+             use_container_width=True, caption="Security Operations Center Dashboard")
     
     # Summary statistics
     col1, col2 = st.columns(2)
